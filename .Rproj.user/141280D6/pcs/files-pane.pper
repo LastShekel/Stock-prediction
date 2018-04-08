@@ -1,0 +1,9 @@
+{
+    "path" : "E:/Stock-prediction/Stock-prediction",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
