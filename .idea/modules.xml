@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Stock-prediction.iml" filepath="$PROJECT_DIR$/.idea/Stock-prediction.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../django_server/.idea/django_server.iml" filepath="$PROJECT_DIR$/../django_server/.idea/django_server.iml" />
     </modules>
   </component>
 </project>
