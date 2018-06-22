@@ -1,0 +1,47 @@
+body{
+    margin:40px auto;
+    max-width:650px;
+    line-height:1.6;
+    font-size:18px;
+    color:#444;
+    padding:0 10px;
+}
+h1,h2,h3{
+    line-height:1.2;
+    text-align: center;
+}
+a {
+    color: blue;
+}
+
+form {
+    margin: 0 auto;
+    padding: 1em;
+    border: 1px solid #CCC;
+    border-radius: 1em;
+}
+form div + div {
+    margin-top: 1em;
+}
+label {
+    display: inline-block;
+    text-align: center;
+    width: 40%;
+}
+input {
+    font: 1em sans-serif;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border: 1px solid #999;
+    width: 50%;
+}
+input:focus {
+    border-color: #000;
+}
+p, div.button {
+    text-align: center;
+}
+
+p.error-message {
+    color: lightcoral;
+}
