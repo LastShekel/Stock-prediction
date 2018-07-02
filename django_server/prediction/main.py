@@ -1,8 +1,8 @@
 import os
 
 import pandas as pd
-from keras.layers import Dense, LSTM
-from keras.models import Sequential
+from keras.models import load_model
+from sklearn.preprocessing import MinMaxScaler
 
 
 def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
@@ -30,38 +30,30 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     return agg
 
 
-window = 4
+window = 5
 var = ["open", "close", "high", "low"]
-future = 1
+future = 3
+server_root = "C:/Users/SomaC/PycharmProjects/Stock-prediction/"
 
 
-def get_X_y(data):
+def get_X_y(data, window, future):
     raw = series_to_supervised(data[var], window, future)
-    X = raw[raw.columns[:len(var) * window]]
-    y = raw[raw.columns[len(var) * window:]]
-    # reshape input to be 3D [samples, timesteps, features]
-    return X.values.reshape((X.shape[0], 1, X.shape[1])), y.values.reshape((y.shape[0], 1, y.shape[1]))
+
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    X = scaler.fit_transform(raw[raw.columns[:len(var) * window]].values)
+    y = scaler.fit_transform(raw[raw.columns[len(var) * window:]].values)
+
+    return X.reshape((X.shape[0], 1, X.shape[1])), y.reshape((y.shape[0], 1, y.shape[1]))
 
 
 def predict(uploaded_file_url):
     print(uploaded_file_url)
     print(os.listdir("."))
-    data = pd.read_csv("C:/Users/SomaC/PycharmProjects/Stock-prediction/django_server/tempcsv/AAPL.csv")
-    # os.remove(uploaded_file_url)
-    X_train, y_train = get_X_y(data)
-
-    model = Sequential()
-    model.add(LSTM(50, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
-    model.add(Dense(4))
-    model.compile(loss='mae', optimizer='adam')
-    # fit network
-    model.summary()
-
-    # print("start train")
-    # history = model.fit(X_train, y_train, epochs=50, batch_size=72, verbose=2, shuffle=False)
-    # print("finish train")
-
-    # res = pd.DataFrame(model.predict(X_train).reshape(y_train.shape[0], y_train.shape[2]))
-    # res.columns = var
-    res = data
+    data = pd.read_csv(server_root + "django_server" + uploaded_file_url)
+    os.remove(server_root + "django_server" + uploaded_file_url)
+    test = data[var][(window + future):]
+    train = data[var][:(window + future)]
+    model = load_model(server_root + "model.h5")
+    res=model.predict(test)
+    res.reshape(future,len(var))
     return res

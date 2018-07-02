@@ -1,29 +1,37 @@
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import get_object_or_404, render
+from django.utils.datastructures import MultiValueDictKeyError
 
 from .main import predict
 from .models import Riddle, Option
 
 
 def index(request):
-    context = {"message": "her"}
-    if request.method == 'POST' and request.FILES['csvdata']:
-        csvdata = request.FILES['csvdata']
-        fs = FileSystemStorage()
-        filename = fs.save(csvdata.name, csvdata)
-        uploaded_file_url = fs.url(filename)
-        try:
-            res = predict(uploaded_file_url)
-        except FileNotFoundError:
-            res = "file not found"
-        data = [[i,v] for i,v in enumerate(res.open)]
-        print(data)
-        context = {
-            'uploaded_file_url': uploaded_file_url,
-            'res': res.to_html(),
-            'values': data
-        }
-        return render(request, 'index.html', context)
+    context = {"message": "Error"}
+    try:
+        if request.method == 'POST' and request.FILES['csvdata']:
+            csvdata = request.FILES['csvdata']
+            fs = FileSystemStorage()
+            filename = fs.save(csvdata.name, csvdata)
+            uploaded_file_url = fs.url(filename)
+            try:
+                res = predict(uploaded_file_url)
+                print(res[["date", "close", "open", "high",
+                           "low"]])
+            except FileNotFoundError:
+                res = "file not found"
+            data = res[["date", "close", "open", "high",
+                        "low"]]
+            context = {
+                'uploaded_file_url': uploaded_file_url,
+                'res': data.to_html(),
+                'values': data.values.tolist()
+            }
+            return render(request, 'index.html', context)
+    except MultiValueDictKeyError:
+        context = {"message": "File not found"}
+    except KeyError:
+        context = {"message": "Wrong format"}
     return render(request, "index.html", context)
 
 

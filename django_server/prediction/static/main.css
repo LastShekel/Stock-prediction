@@ -45,3 +45,6 @@ p, div.button {
 p.error-message {
     color: lightcoral;
 }
+#count_graph{
+    left:1000px;
+}
